@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grouped Students by Department</title>
+    <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Grouped Students by Department</h1>
+
+        <div class="button-container">
+            <button class="button" onclick="goBack()">Back to Main Page</button>
+        </div>
+
+        <div id="grouped-students">
+            <!-- Grouped students will be displayed here -->
+        </div>
+    </div>
+
+    <script src="./script.js"></script>
+    <script>
+        // Function to go back to the main page
+        function goBack() {
+            window.location.href = 'index.html'; // Change this to the correct path if needed
+        }
+
+        // Function to group and display students by department sorted by SGPA
+        function displayGroupedStudents() {
+            // Fetch the students array from localStorage (if it exists)
+            const students = JSON.parse(localStorage.getItem('students')) || [];
+
+            // Group students by department
+            const groupedByDept = students.reduce((acc, student) => {
+                if (!acc[student.degree]) {
+                    acc[student.degree] = [];
+                }
+                acc[student.degree].push(student);
+                return acc;
+            }, {});
+
+            // Sort students within each department by SGPA (grade)
+            for (const dept in groupedByDept) {
+                groupedByDept[dept].sort((a, b) => b.grade - a.grade);
+            }
+
+            // Display grouped students
+            let htmlContent = '';
+            for (const dept in groupedByDept) {
+                htmlContent += `<h2>Department: ${dept}</h2><ul>`;
+                groupedByDept[dept].forEach(student => {
+                    htmlContent += `
+                        <li>${student.name} (SGPA: ${student.grade})</li>
+                    `;
+                });
+                htmlContent += '</ul>';
+            }
+
+            document.getElementById('grouped-students').innerHTML = htmlContent;
+        }
+
+        // Call the function to display the grouped students
+        displayGroupedStudents();
+    </script>
+</body>
+</html>
